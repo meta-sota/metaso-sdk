@@ -17,6 +17,8 @@ class Query(BaseModel):
     searchTopicId: Optional[str] = None
     enableMix: bool = False
     newEngine: bool = False
+    mode: str = None
+    enableImage: bool = False
 
 
 class Topic(BaseModel):
