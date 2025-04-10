@@ -54,7 +54,10 @@ def update_progress(file: File) -> File:
     :return: 更新后的文件对象。
     """
     resp = client.get(f"/file/{file.id}/progress")
-    file.progress = resp.json()["data"]
+    json = resp.json()
+    status = Status.model_validate(json)
+    if status.errCode == 0:
+        file.progress = json["data"]
     return file
 
 
