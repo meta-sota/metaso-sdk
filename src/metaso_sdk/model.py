@@ -35,3 +35,16 @@ class File(BaseModel):
     previewUrl: Optional[str] = None
     originalUrl: Optional[str] = None
     progress: int
+
+
+class Book(BaseModel):
+    id: Optional[str]
+    thumbImg: Optional[str]
+    hasPpt: bool
+    title: str
+    url: str
+    fileId: str
+    lastPage: int
+    totalPage: int
+    progress: int
+    size: int

@@ -1,10 +1,10 @@
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from streamable import Stream
 
 from .client import client
-from .model import File, Status, Topic
+from .model import File, Book, Status, Topic
 
 
 def create_topic(topic: Topic) -> Optional[Topic]:
@@ -47,27 +47,29 @@ def upload_file(topic: Topic, file) -> Optional[File]:
         return file
 
 
-def update_progress(file: File) -> File:
-    """更新文件处理进度。
+def update_progress(file_or_book: Union[File, Book]) -> Union[File, Book]:
+    """更新处理进度。
 
-    :param file: 需要更新进度的文件对象。
-    :return: 更新后的文件对象。
+    :param file_or_book: 待更新进度的 File 或者 Book 对象。
+    :return: 更新 progress 后的对象。
     """
-    resp = client.get(f"/file/{file.id}/progress")
+    file_id = file_or_book.id if isinstance(file_or_book, File) else file_or_book.fileId
+    resp = client.get(f"/file/{file_id}/progress")
     json = resp.json()
     status = Status.model_validate(json)
     if status.errCode == 0:
-        file.progress = json["data"]
-    return file
+        file_or_book.progress = json["data"]
+    return file_or_book
 
 
-def delete_file(file: File) -> bool:
-    """删除指定的文件。
+def delete_file(file_or_book: Union[File, Book]) -> bool:
+    """删除文件。
 
-    :param file: 要删除的File对象。
-    :return: 如果成功删除File返回True，否则返回False。
+    :param file_or_book: 待删除的 File 或者 Book 对象。
+    :return: 如果删除成功，返回True。否则返回False。
     """
-    resp = client.post("/file/trash", json={"ids": [file.id]})
+    file_id = file_or_book.id if isinstance(file_or_book, File) else file_or_book.fileId
+    resp = client.post("/file/trash", json={"ids": [file_id]})
     status = Status.model_validate(resp.json())
     return status.errCode == 0
 
