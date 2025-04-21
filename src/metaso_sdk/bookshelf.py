@@ -15,6 +15,7 @@ def upload_book(fileobj_or_url) -> Optional[Book]:
     else:
         params = {"files": {"file": fileobj_or_url}}
     resp = client.put("/book", **params)
+    resp.raise_for_status()
     json = resp.json()
     status = Status.model_validate(json)
     if status.errCode == 0:

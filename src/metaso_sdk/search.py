@@ -32,4 +32,5 @@ def search(query: Query, *, stream: bool = False, topic: Topic = None):
         return _gen()
 
     resp = client.post("/search/v2", json=query.model_dump())
+    resp.raise_for_status()
     return resp.json()["data"]

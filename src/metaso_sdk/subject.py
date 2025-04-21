@@ -14,6 +14,7 @@ def create_topic(topic: Topic) -> Optional[Topic]:
     :return: 专题对象。
     """
     resp = client.put("/topic", json=topic.model_dump())
+    resp.raise_for_status()
     json = resp.json()
     status = Status.model_validate(json)
     if status.errCode == 0:
@@ -28,6 +29,7 @@ def delete_topic(topic: Topic) -> bool:
     :return: 如果成功删除Topic返回True，否则返回False。
     """
     resp = client.post("/topic/trash", json={"ids": [topic.id]})
+    resp.raise_for_status()
     status = Status.model_validate(resp.json())
     return status.errCode == 0
 
@@ -40,6 +42,7 @@ def upload_file(topic: Topic, file) -> Optional[File]:
     :return: 如果文件上传成功，返回文件对象；否则返回None。
     """
     resp = client.put(f"/file/{topic.dirRootId}", files={"file": file})
+    resp.raise_for_status()
     json = resp.json()
     status = Status.model_validate(json)
     if status.errCode == 0:
@@ -55,6 +58,7 @@ def update_progress(file_or_book: Union[File, Book]) -> Union[File, Book]:
     """
     file_id = file_or_book.id if isinstance(file_or_book, File) else file_or_book.fileId
     resp = client.get(f"/file/{file_id}/progress")
+    resp.raise_for_status()
     json = resp.json()
     status = Status.model_validate(json)
     if status.errCode == 0:
@@ -70,6 +74,7 @@ def delete_file(file_or_book: Union[File, Book]) -> bool:
     """
     file_id = file_or_book.id if isinstance(file_or_book, File) else file_or_book.fileId
     resp = client.post("/file/trash", json={"ids": [file_id]})
+    resp.raise_for_status()
     status = Status.model_validate(resp.json())
     return status.errCode == 0
 
